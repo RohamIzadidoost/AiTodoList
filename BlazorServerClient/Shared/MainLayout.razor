@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>ToDoApp</PageTitle>
+<head> 
+    <style>
+        .top-row{
+            background-image: linear-gradient(180deg, rgba(5, 54, 103, 0.432) 0%, #4706111e 70%);
+        }
+    </style>
+</head>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

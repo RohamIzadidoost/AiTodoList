@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "kcmA5ZI6Hp93Ugz/TV0lS2hg3Iwm90BfV64d8WgICNugoa/PHIFk5r+akGP80/pZL1kdPON5ePAuE+0kLCk99g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\asus\\Desktop\\approj\\WpfApp1\\WpfApp1.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\asus\\.nuget\\packages\\microsoft.extensions.apidescription.client\\0.3.0-preview7.19365.7\\microsoft.extensions.apidescription.client.0.3.0-preview7.19365.7.nupkg.sha512",
+    "C:\\Users\\asus\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
+    "C:\\Users\\asus\\.nuget\\packages\\nswag.apidescription.client\\13.0.5\\nswag.apidescription.client.13.0.5.nupkg.sha512",
+    "C:\\Users\\asus\\.nuget\\packages\\nswag.msbuild\\13.0.5\\nswag.msbuild.13.0.5.nupkg.sha512"
+  ],
+  "logs": []
+}

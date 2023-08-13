@@ -1,0 +1,24 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="642" Width="1039">
+    <Grid Margin="0,0,0,-6">
+    `   <DataGrid d:Name = "TaskList" Margin="10,10,183,10" SelectionChanged="DataGrid_SelectionChanged"/>
+            <DataGrid.Columns>
+            <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+            <DataGridTextColumn Header="Description" Binding="{Binding Description}" />
+            <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="AddTask" Content="+" HorizontalAlignment="Left" Margin="952,577,0,0" VerticalAlignment="Top" Background="#FF98DC3B" Width="30" Height="30" BorderBrush="#FF9C1414" FontSize="20" RenderTransformOrigin="2.27,0.345"/>
+        <Button x:Name="AddTask_Copy" Content="-" HorizontalAlignment="Left" Margin="892,577,0,0" VerticalAlignment="Top" Background="#FFC95D2B" Width="30" Height="30" BorderBrush="#FF0BF13F" FontSize="20" RenderTransformOrigin="2.27,0.345"/>
+        <TextBox x:Name="QuoteOfTheDat" HorizontalAlignment="Left" Margin="874,470,0,0" TextWrapping="Wrap" Text="quote" VerticalAlignment="Top" Width="155" Background="#FFC67979" Height="70"/>
+        <Button x:Name="AdviseOnOrder" Content="AdviseOnOrder" HorizontalAlignment="Left" Margin="874,190,0,0" VerticalAlignment="Top" Width="141" Height="72" Background="#FF37E6FB"/>
+        <Button x:Name="AdviseOnTask" Content="AdviseOnTask" HorizontalAlignment="Left" Margin="874,300,0,0" VerticalAlignment="Top" Height="82" Width="141" Background="#FFDABF54"/>
+
+    </Grid>
+</Window>

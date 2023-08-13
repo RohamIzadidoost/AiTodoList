@@ -1,0 +1,55 @@
+@page "/BoredPage"
+@inject NavigationManager Navigation
+<head>
+    <style>
+        body{
+            height: 100%;
+            background-image: linear-gradient(180deg, rgba(5, 54, 103, 0.432) 0%, #4606471e 70%);
+        }
+    </style>
+</head>
+<h1> Click here and let me Suggest you a task  </h1>
+<h2> Write How many hours you want it to take </h2>
+<input @bind="Hours"/>
+<button class="btn btn-success" @onclick="Suggest">Click</button>
+<h3> @RESULT </h3>
+@code
+{
+    @using System.Net.Http;
+    @using Swashbuckle.AspNetCore.Swagger;
+    @using Serverlib;
+    @using Microsoft.AspNetCore.SignalR.Client;
+    
+    public static HttpClient httpClient = new HttpClient();
+
+    private VirtualSwagger virtualSwagger = new VirtualSwagger() ; 
+    public Serverlib.swaggerClient Client ;
+
+    public HubConnection connection ; 
+    public HubConnection ConnInt ; 
+
+    public string Hours = "1" ;
+    public string RESULT ; 
+    protected override async Task OnInitializedAsync()
+    {   
+        connection = new HubConnectionBuilder()
+        .WithUrl("http://localhost:5000/SR")
+        .Build();
+        ConnInt = new HubConnectionBuilder()
+        .WithUrl("http://localhost:5000/SRInt")
+        .Build();
+        connection.StartAsync().Wait() ; 
+        ConnInt.StartAsync().Wait() ; 
+        Client = new Serverlib.swaggerClient("http://localhost:5000/", httpClient); 
+    }
+    public void Suggest()
+    {
+        var gptres = Client.BoredAsync(int.Parse(Hours)).Result;
+        List<string> ResStrings = new List<string>();
+        foreach (string s in gptres)
+        {
+            ResStrings.Add(s);
+        }
+        RESULT = ResStrings[0] ; 
+    }
+}

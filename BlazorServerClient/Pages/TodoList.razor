@@ -1,0 +1,167 @@
+﻿@page "/TodoList"
+@inject NavigationManager Navigation
+
+@code {
+    @using System.Net.Http;
+    @using Swashbuckle.AspNetCore.Swagger;
+    @using Serverlib;
+    @using Microsoft.AspNetCore.SignalR.Client;
+    static HttpClient httpClient = new HttpClient();
+
+    public Serverlib.swaggerClient Client = new Serverlib.swaggerClient("http://localhost:5000/", httpClient);
+
+    public HubConnection connection = new HubConnectionBuilder()
+    .WithUrl("http://localhost:5000/SR")
+    .Build();
+    public HubConnection ConnInt = new HubConnectionBuilder()
+    .WithUrl("http://localhost:5000/SRInt")
+    .Build();
+    private List<TaskModel> tasks = new List<TaskModel>();
+    
+    public static List<Serverlib.Job> JobList = new List<Serverlib.Job>()  ;
+    protected override async Task OnInitializedAsync()
+    {
+        
+        var jobs = Client.GetAllAsync().Result;
+        JobList = new List<Serverlib.Job>() ; 
+        foreach(var j in jobs)
+        {
+            JobList.Add(j) ;    
+        }
+        helper.SC = new SynchronizedCollection<Serverlib.Job>("http://localhost:5000/" , JobList); 
+        
+        foreach (var j in jobs)
+        {
+            tasks.Add(new TaskModel() { Id = j.Id, Name = j.Name, Description = j.Work, IsDone = j.Done });
+        }
+        connection.StartAsync().Wait();
+        ConnInt.StartAsync().Wait();
+
+        connection.On("CreateSignal", (Serverlib.Job j) =>
+        {
+            InvokeAsync(
+                () => {
+                     tasks.Add(new TaskModel() { Id = j.Id, Name = j.Name, Description = j.Work, IsDone = j.Done } ) ; 
+                }
+            );
+            Navigation.NavigateTo("/TodoList" , forceLoad : true) ; 
+        });
+
+        ConnInt.On("DeleteSignal", (int id) =>
+        {
+            InvokeAsync(
+                () => {
+                    foreach(var j in tasks){
+                        if(j.Id == id){
+                            tasks.Remove(j) ; 
+                        }
+                    }
+                }
+            );
+            Navigation.NavigateTo("/TodoList" , forceLoad : true) ; 
+        });
+
+        ConnInt.On("UpdateSignal", (Job j) =>
+        {
+            InvokeAsync(
+                () => {
+                    tasks.Clear() ; 
+                    var jobs = Client.GetAllAsync().Result;
+                    foreach (var j in jobs)
+                    {
+                        tasks.Add(new TaskModel() { Id = j.Id, Name = j.Name, Description = j.Work, IsDone = j.Done });
+                    }
+                }
+            );
+            Navigation.NavigateTo("/TodoList" , forceLoad : true) ; 
+        }); 
+
+    }
+
+    public List<TaskModel> Tasks { get => tasks; }
+
+
+    public void EditTask(int taskId)
+    {
+        Navigation.NavigateTo($"Edit/{taskId}") ; 
+    }
+
+    public void DeleteTask(int taskId)
+    {
+        Navigation.NavigateTo($"Delete/{taskId}") ; 
+    }
+
+    public void HelpForTask(int taskId){
+        Navigation.NavigateTo($"HelpForTask/{taskId}" , forceLoad : true) ;
+    }
+    public void SuggestForTask(int taskId){
+        Navigation.NavigateTo($"Suggest/{taskId}" , forceLoad : true) ;
+    }
+    public class TaskModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsDone { get; set; }
+    }
+}
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {background-color: #cf5f2f3d;}
+        tr:nth-child(odd) {background-color: #9ee1f2b5;}
+        .btn-group {
+            visibility: hidden;
+        }
+
+        tr:hover .btn-group {
+            visibility: visible;
+        }
+        
+        body{
+            height: 100%;
+            background-image: linear-gradient(180deg, #9ec5f2a4 0%, #cf2f2f28 80%);
+        }
+    </style>
+</head>
+<body>
+<h1>TodoList </h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in helper.SC.Objs())
+        {
+            <tr>
+                <td>@task.Id</td>
+                <td>@task.Name</td>
+                <td>@task.Work</td>
+                <td>@(task.Done ? "Done" : "Undone")</td>
+                <td>
+                    <button class="btn btn-primary btn-group" @onclick="() => EditTask(task.Id)">Edit</button>
+                    <button class="btn btn-danger btn-group" @onclick="() => DeleteTask(task.Id)">Delete</button>
+                    <button class="btn btn-success btn-group" @onclick="() => HelpForTask(task.Id)">Ask Me How to Do it</button>
+                    <button class="btn btn-info btn-group" @onclick="() => SuggestForTask(task.Id)">Suggestions</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</body>
+<NavLink class="btn btn-success" href="AddPage">Add Task</NavLink>

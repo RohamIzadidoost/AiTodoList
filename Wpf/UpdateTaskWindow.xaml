@@ -1,0 +1,15 @@
+<Window x:Class="Wpf.UpdateTaskWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edit Task" Height="200" Width="300">
+    <Grid>
+        <Label Content="Task Name:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0"/>
+        <TextBox x:Name="txtName" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="10,30,0,0"/>
+        <Label Content="Task Descryption:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50,0,0"/>
+        <TextBox x:Name="txtWork" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="10,70,0,0"/>
+        <Label Content="Done ?" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,90,0,0"/>
+        <RadioButton x:Name="IsDonebtn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="10,110,0,0"/>
+        <Button x:Name="btnUpdate" Content="Edit Task" HorizontalAlignment="Center" VerticalAlignment="Top" Width="100" Margin="0,130,0,0"
+                Click="UpdateButton_Click"/>
+    </Grid>
+</Window>

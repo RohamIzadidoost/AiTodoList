@@ -1,0 +1,57 @@
+@page "/HelpPage"
+@inject NavigationManager Navigation
+<head>
+    <style>
+        body{
+            height: 100%;
+            background-image: linear-gradient(180deg, rgba(5, 103, 101, 0.432) 0%, #1106471e 70%);
+        }
+    </style>
+</head>
+<body> 
+<h1> If you have a problem on doing your tasks tell me your problem and let me help you do them  </h1>
+<h2> Write your problem</h2>
+<input @bind="problem"/>
+<button class="btn btn-success" @onclick="Suggest">Click</button>
+<h3> @RESULT </h3>
+</body>
+@code
+{
+    @using System.Net.Http;
+    @using Swashbuckle.AspNetCore.Swagger;
+    @using Serverlib;
+    @using Microsoft.AspNetCore.SignalR.Client;
+    
+    public static HttpClient httpClient = new HttpClient();
+
+    private VirtualSwagger virtualSwagger = new VirtualSwagger() ; 
+    public Serverlib.swaggerClient Client ;
+
+    public HubConnection connection ; 
+    public HubConnection ConnInt ; 
+
+    public string problem ;
+    public string RESULT ; 
+    protected override async Task OnInitializedAsync()
+    {   
+        connection = new HubConnectionBuilder()
+        .WithUrl("http://localhost:5000/SR")
+        .Build();
+        ConnInt = new HubConnectionBuilder()
+        .WithUrl("http://localhost:5000/SRInt")
+        .Build();
+        connection.StartAsync().Wait() ; 
+        ConnInt.StartAsync().Wait() ; 
+        Client = new Serverlib.swaggerClient("http://localhost:5000/", httpClient); 
+    }
+    public void Suggest()
+    {
+        var gptres = Client.MoiveAndOrderAsync(problem).Result;
+        List<string> ResStrings = new List<string>();
+        foreach (string s in gptres)
+        {
+            ResStrings.Add(s);
+        }
+        RESULT = ResStrings[0] ; 
+    }
+}

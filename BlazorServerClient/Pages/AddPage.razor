@@ -1,0 +1,58 @@
+@page "/AddPage"
+@inject NavigationManager Navigation
+<head>
+    <style>
+        body{
+            height: 100%;
+            background-image: linear-gradient(180deg, rgba(5, 103, 39, 0.432) 0%, #0647231e 70%);
+        }
+    </style>
+</head>
+<body>
+<h1> Id </h1>
+<input @bind="_Id" />
+<h2> Name </h2>
+<input @bind="_Name"/>
+<h3> Descryption </h3>
+<input @bind="_Description" />
+<button class="btn btn-success" @onclick="AddTask">Add Task</button>
+</body>
+@code
+{
+    @using System.Net.Http;
+    @using Swashbuckle.AspNetCore.Swagger;
+    @using Serverlib;
+    @using Microsoft.AspNetCore.SignalR.Client;
+    
+    public static HttpClient httpClient = new HttpClient();
+
+    private VirtualSwagger virtualSwagger = new VirtualSwagger() ; 
+    public Serverlib.swaggerClient Client ;
+
+    public HubConnection connection ; 
+    public HubConnection ConnInt ; 
+    public String _Id ;
+    public string _Name ; 
+
+    public string _Description  ; 
+
+    protected override async Task OnInitializedAsync()
+    {   
+        connection = new HubConnectionBuilder()
+        .WithUrl("http://localhost:5000/SR")
+        .Build();
+        ConnInt = new HubConnectionBuilder()
+        .WithUrl("http://localhost:5000/SRInt")
+        .Build();
+        connection.StartAsync().Wait() ; 
+        ConnInt.StartAsync().Wait() ; 
+        Client = new Serverlib.swaggerClient("http://localhost:5000/", httpClient); 
+    }
+    public void AddTask()
+    {
+        Serverlib.Job job = new Serverlib.Job{Id = int.Parse(_Id) , Name = _Name , Work = _Description , Done = false} ; 
+        helper.SC.Add(job) ; 
+        Thread.Sleep(1000) ; //will be Asynced
+        Navigation.NavigateTo("/TodoList") ; 
+    }
+}

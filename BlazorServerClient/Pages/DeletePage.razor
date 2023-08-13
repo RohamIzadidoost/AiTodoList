@@ -1,0 +1,72 @@
+@page "/Delete/{ID}"
+@inject NavigationManager Navigation
+<head>
+    <style>
+        body{
+            height: 100%;
+            background-image: linear-gradient(180deg, rgba(5, 103, 79, 0.273) 0%, #47060669 70%);
+        }
+    </style>
+</head>
+<body>
+<h1> Are You Sure about deleting task @ID </h1>
+<button class="btn btn-success" @onclick="DeleteTask">Delete</button>
+</body>
+@code
+{
+    @using System.Net.Http;
+    @using Swashbuckle.AspNetCore.Swagger;
+    @using Serverlib;
+    @using Microsoft.AspNetCore.SignalR.Client;
+    
+    public static HttpClient httpClient = new HttpClient();
+
+    private VirtualSwagger virtualSwagger = new VirtualSwagger() ; 
+    public Serverlib.swaggerClient Client ;
+
+    public HubConnection connection ; 
+    public HubConnection ConnInt ; 
+    public bool _IsDone ;
+    public string _Name ;
+
+    [Parameter]
+    public string ID { get; set; }
+
+    public int _Id ; 
+    public string _Description  ; 
+
+
+    protected override async Task OnInitializedAsync()
+    {   
+        _Id = int.Parse(ID) ; 
+        connection = new HubConnectionBuilder()
+        .WithUrl("http://localhost:5000/SR")
+        .Build();
+        ConnInt = new HubConnectionBuilder()
+        .WithUrl("http://localhost:5000/SRInt")
+        .Build();
+        connection.StartAsync().Wait() ; 
+        ConnInt.StartAsync().Wait() ; 
+        Client = new Serverlib.swaggerClient("http://localhost:5000/", httpClient); 
+    }
+    public void DeleteTask()
+    {
+        Serverlib.Job job = new Serverlib.Job() ; 
+        
+        foreach(var v in helper.SC.Objs()){
+            if(v.Id == _Id){
+                job = v ; 
+            }
+        }
+        try{
+            helper.SC.Remove(job) ;
+            Thread.Sleep(1000) ;  //will be Asynced
+            Navigation.NavigateTo("/TodoList") ; 
+        }
+        catch
+        {
+            Navigation.NavigateTo("/TodoList") ; 
+        }
+        
+    }
+}
